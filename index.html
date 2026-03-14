@@ -1,34 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Meu Termo</title>
 
 <style>
 
 body{
-font-family:Arial;
-text-align:center;
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
 background:#121213;
 color:white;
+text-align:center;
+}
+
+h1{
+margin-top:20px;
 }
 
 #board{
 display:grid;
-grid-template-columns:repeat(5,60px);
-gap:5px;
-justify-content:center;
-margin-top:30px;
+grid-template-columns:repeat(5,1fr);
+gap:6px;
+width:90vw;
+max-width:350px;
+margin:30px auto;
 }
 
 .tile{
-width:60px;
-height:60px;
+width:100%;
+aspect-ratio:1;
 border:2px solid #3a3a3c;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:30px;
+font-size:clamp(22px,5vw,32px);
 font-weight:bold;
 text-transform:uppercase;
 }
@@ -48,41 +57,79 @@ background:#3a3a3c;
 border:none;
 }
 
+.loseTile{
+background:#ff4d4d !important;
+border:none;
+}
+
 #keyboard{
-margin-top:30px;
+width:95vw;
+max-width:500px;
+margin:auto;
 }
 
 .keyrow{
 display:flex;
 justify-content:center;
-margin-bottom:8px;
+margin-bottom:6px;
 }
 
 .key{
+flex:1;
+margin:2px;
+padding:12px;
+font-size:clamp(12px,3vw,16px);
+font-weight:bold;
 background:white;
 color:black;
 border:none;
-margin:2px;
-padding:12px;
-font-size:16px;
-font-weight:bold;
-cursor:pointer;
 border-radius:4px;
+cursor:pointer;
 }
 
 .key.enter{
 background:#6aaa64;
 color:white;
+flex:1.5;
 }
 
 .key.delete{
 background:#6aaa64;
 color:white;
+flex:1.5;
 }
 
-#message{
-margin-top:20px;
-font-size:22px;
+#victoryScreen,#loseScreen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.9);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:10;
+}
+
+.victoryBox{
+text-align:center;
+padding:20px;
+}
+
+.victoryTitle{
+font-size:clamp(40px,8vw,70px);
+color:#6aaa64;
+}
+
+.loseTitle{
+font-size:clamp(40px,8vw,70px);
+color:#ff4d4d;
+}
+
+.victoryText,.loseText{
+font-size:clamp(18px,4vw,24px);
+margin:20px 0;
 }
 
 .retry{
@@ -90,35 +137,9 @@ background:#6aaa64;
 border:none;
 color:white;
 font-size:22px;
-padding:15px 30px;
+padding:15px 35px;
 border-radius:10px;
 cursor:pointer;
-transition:0.2s;
-}
-
-.retry:hover{
-transform:scale(1.1);
-background:#5a9c57;
-}
-
-#victoryScreen{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#121213;
-display:none;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:10;
-}
-
-#victoryScreen h1{
-font-size:70px;
-color:#6aaa64;
-margin-bottom:20px;
 }
 
 #confetti{
@@ -179,12 +200,20 @@ pointer-events:none;
 
 </div>
 
-<div id="message"></div>
-
 <div id="victoryScreen">
-<h1>🎉 VOCÊ GANHOU! 🎉</h1>
-<p>Parabéns! Você descobriu a palavra.</p>
+<div class="victoryBox">
+<h1 class="victoryTitle">🎉 VOCÊ GANHOU 🎉</h1>
+<p class="victoryText">Parabéns! Você descobriu a palavra.</p>
 <button onclick="restart()" class="retry">Jogar novamente</button>
+</div>
+</div>
+
+<div id="loseScreen">
+<div class="victoryBox">
+<h1 class="loseTitle">❌ VOCÊ PERDEU ❌</h1>
+<p class="loseText">A palavra era: <span id="correctWord"></span></p>
+<button onclick="restart()" class="retry">Tentar novamente</button>
+</div>
 </div>
 
 <canvas id="confetti"></canvas>
@@ -196,9 +225,10 @@ pointer-events:none;
 <script>
 
 let palavra="AMORZ"
+
 let tentativaAtual=0
-let maxTentativas=6
 let tentativa=""
+let maxTentativas=6
 
 const board=document.getElementById("board")
 
@@ -239,7 +269,6 @@ tile.textContent=tentativa[i]||""
 function check(){
 
 if(tentativa.length!=5){
-alert("Digite 5 letras")
 return
 }
 
@@ -264,8 +293,11 @@ tile.classList.add("absent")
 if(tentativa==palavra){
 
 document.getElementById("victoryScreen").style.display="flex"
+
+setTimeout(()=>{
 document.getElementById("winSound").play()
 startConfetti()
+},400)
 
 return
 }
@@ -274,13 +306,27 @@ tentativaAtual++
 tentativa=""
 
 if(tentativaAtual==maxTentativas){
-document.getElementById("message").innerHTML="❌ Você perdeu! A palavra era "+palavra
+
+for(let i=0;i<5;i++){
+
+let tile=board.children[(tentativaAtual-1)*5+i]
+
+tile.classList.add("loseTile")
+
+}
+
+document.getElementById("correctWord").textContent=palavra
+
+document.getElementById("loseScreen").style.display="flex"
+
 }
 
 }
 
 function restart(){
+
 location.reload()
+
 }
 
 const canvas=document.getElementById("confetti")
