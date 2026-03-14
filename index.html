@@ -2,14 +2,57 @@
 <html>
 <head>
 <title>Meu Termo</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+}
+
+input{
+font-size:20px;
+padding:10px;
+}
+
+button{
+font-size:20px;
+padding:10px;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<h1>Meu jogo estilo Termo</h1>
+<h1>Jogo de Palavra</h1>
 
-<p>O jogo está sendo configurado.</p>
+<p>Tente descobrir a palavra!</p>
+
+<input id="guess" maxlength="5">
+
+<button onclick="check()">Enviar</button>
+
+<p id="result"></p>
+
+<script>
+
+let palavra="amor"
+
+function check(){
+
+let tentativa=document.getElementById("guess").value.toLowerCase()
+
+if(tentativa==palavra){
+document.getElementById("result").innerHTML="🎉 Você acertou!"
+}
+else{
+document.getElementById("result").innerHTML="❌ Tente novamente"
+}
+
+}
+
+</script>
 
 </body>
-
 </html>
