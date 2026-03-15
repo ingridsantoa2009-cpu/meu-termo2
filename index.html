@@ -196,12 +196,12 @@ Boa sorte!
 </div>
 
 <div id="victory" class="overlay">
-<h1>VOCÊ GANHOU 🎉</h1>
+<h1>🎉 VOCÊ GANHOU 🎉</h1>
 <button class="retry" onclick="location.reload()">Tentar novamente</button>
 </div>
 
 <div id="defeat" class="overlay">
-<h1>VOCÊ PERDEU ❌</h1>
+<h1>❌ VOCÊ PERDEU ❌</h1>
 <p>A palavra era: <span id="loseWord"></span></p>
 <button class="retry" onclick="location.reload()">Tentar novamente</button>
 </div>
@@ -250,7 +250,7 @@ loseGame()
 
 }
 
-for(let r=0;r<6;r++){
+for(let r=0;r<5;r++){
 
 let row=[]
 
@@ -381,7 +381,7 @@ return
 currentRow++
 currentCol=0
 
-if(currentRow===6){
+if(currentRow===5){
 
 clearInterval(timerInterval)
 
