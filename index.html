@@ -269,11 +269,11 @@ Boa sorte!
 
 <script>
 
-let palavra="AMORZ"
+let palavra="TERMO"
 
 let tentativaAtual=0
 let tentativa=""
-let maxTentativas=6
+let maxTentativas=5
 
 let tempo=120
 let timerInterval
@@ -366,7 +366,9 @@ tile.classList.add("present")
 
 else{
 tile.classList.add("absent")
-document.getElementById("key"+tentativa[i]).classList.add("wrong")
+else{
+tile.classList.add("absent")
+}
 }
 
 }
