@@ -8,7 +8,7 @@
 
 body{
 margin:0;
-font-family:Arial;
+font-family:Arial, Helvetica, sans-serif;
 background:#121213;
 color:white;
 display:flex;
@@ -24,14 +24,14 @@ margin-bottom:10px;
 
 #timer{
 font-size:22px;
-margin-bottom:10px;
+margin-bottom:15px;
 }
 
 #board{
 display:grid;
 grid-template-columns:repeat(5,60px);
 grid-gap:8px;
-margin-bottom:20px;
+margin-bottom:25px;
 }
 
 .tile{
@@ -62,19 +62,29 @@ border:none;
 }
 
 #keyboard{
-display:grid;
-grid-template-columns:repeat(10,1fr);
-grid-gap:6px;
-max-width:500px;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.row{
+display:flex;
+justify-content:center;
+gap:6px;
 }
 
 .key{
-padding:10px;
+padding:12px 14px;
 background:#818384;
 border:none;
 color:white;
 font-weight:bold;
 cursor:pointer;
+border-radius:4px;
+}
+
+.key.big{
+background:#6aaa64;
 }
 
 #startScreen{
@@ -146,6 +156,11 @@ height:50px;
 font-size:24px;
 }
 
+.key{
+padding:10px;
+font-size:14px;
+}
+
 }
 
 </style>
@@ -172,7 +187,13 @@ Boa sorte!
 
 <div id="board"></div>
 
-<div id="keyboard"></div>
+<div id="keyboard">
+
+<div class="row" id="row1"></div>
+<div class="row" id="row2"></div>
+<div class="row" id="row3"></div>
+
+</div>
 
 <div id="victory" class="overlay">
 <h1>VOCÊ GANHOU 🎉</h1>
@@ -190,7 +211,6 @@ Boa sorte!
 let palavra="AMOR".toUpperCase()
 
 let board=document.getElementById("board")
-let keyboard=document.getElementById("keyboard")
 
 let grid=[]
 let currentRow=0
@@ -198,10 +218,15 @@ let currentCol=0
 
 let tempo=120
 let timerInterval
+let timerStarted=false
 
 function startGame(){
 
 document.getElementById("startScreen").style.display="none"
+
+}
+
+function startTimer(){
 
 timerInterval=setInterval(updateTimer,1000)
 
@@ -243,35 +268,51 @@ grid.push(row)
 
 }
 
-let letters="QWERTYUIOPASDFGHJKLZXCVBNM"
-
-for(let l of letters){
+function createKey(letter,row){
 
 let key=document.createElement("button")
-key.textContent=l
+key.textContent=letter
 key.className="key"
 
-key.onclick=()=>pressKey(l)
+key.onclick=()=>pressKey(letter)
 
-keyboard.appendChild(key)
+document.getElementById(row).appendChild(key)
 
 }
 
-let enter=document.createElement("button")
-enter.textContent="ENTER"
-enter.className="key"
-enter.onclick=check
-keyboard.appendChild(enter)
+function createBigKey(text,row,func){
 
-let del=document.createElement("button")
-del.textContent="DEL"
-del.className="key"
-del.onclick=delLetter
-keyboard.appendChild(del)
+let key=document.createElement("button")
+key.textContent=text
+key.className="key big"
+
+key.onclick=func
+
+document.getElementById(row).appendChild(key)
+
+}
+
+let row1="QWERTYUIOP"
+let row2="ASDFGHJKL"
+let row3="ZXCVBNM"
+
+for(let l of row1) createKey(l,"row1")
+for(let l of row2) createKey(l,"row2")
+
+createBigKey("ENTER","row3",check)
+
+for(let l of row3) createKey(l,"row3")
+
+createBigKey("DEL","row3",delLetter)
 
 function pressKey(letter){
 
 if(currentCol<5){
+
+if(!timerStarted){
+startTimer()
+timerStarted=true
+}
 
 grid[currentRow][currentCol].textContent=letter
 currentCol++
@@ -327,12 +368,12 @@ clearInterval(timerInterval)
 
 document.getElementById("victory").style.display="flex"
 
+confetti()
+
 setTimeout(()=>{
 let audio=new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_8f1c9d9f9f.mp3")
 audio.play()
 },200)
-
-confetti()
 
 return
 }
