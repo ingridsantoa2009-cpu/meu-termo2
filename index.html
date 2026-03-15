@@ -12,10 +12,10 @@
 
 body{
 margin:0;
-font-family:Arial;
-text-align:center;
-background:linear-gradient(135deg,#bde8ff,#ffa6a6);
+font-family:Arial, Helvetica, sans-serif;
+background:#121213;
 color:white;
+text-align:center;
 }
 
 /* START SCREEN */
@@ -30,28 +30,34 @@ display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
-background:linear-gradient(135deg,#bde8ff,#ffa6a6);
+background:#121213;
 z-index:20;
 }
 
 #startScreen h1{
-font-size:40px;
-color:black;
+font-size:38px;
 margin-bottom:30px;
 }
 
 .startBtn{
 background:white;
-color:#ffd000;
-font-size:28px;
+color:black;
+font-size:24px;
 padding:15px 40px;
-border:3px solid black;
-border-radius:10px;
+border:none;
+border-radius:6px;
 cursor:pointer;
 font-weight:bold;
 }
 
-/* GAME */
+/* TIMER */
+
+#timer{
+font-size:26px;
+margin-top:10px;
+}
+
+/* BOARD */
 
 #board{
 display:grid;
@@ -59,7 +65,7 @@ grid-template-columns:repeat(5,1fr);
 gap:6px;
 width:90vw;
 max-width:350px;
-margin:30px auto;
+margin:25px auto;
 }
 
 .tile{
@@ -72,31 +78,25 @@ justify-content:center;
 font-size:28px;
 font-weight:bold;
 text-transform:uppercase;
-background:white;
-color:black;
 }
 
 .correct{
 background:#6aaa64;
-color:white;
 border:none;
 }
 
 .present{
 background:#c9b458;
-color:white;
 border:none;
 }
 
 .absent{
-background:#787c7e;
-color:white;
+background:#3a3a3c;
 border:none;
 }
 
 .loseTile{
 background:red !important;
-color:white;
 border:none;
 }
 
@@ -120,8 +120,8 @@ margin:2px;
 padding:12px;
 font-size:16px;
 font-weight:bold;
-background:white;
-color:black;
+background:#818384;
+color:white;
 border:none;
 border-radius:4px;
 cursor:pointer;
@@ -129,13 +129,11 @@ cursor:pointer;
 
 .key.enter,.key.delete{
 background:#6aaa64;
-color:white;
 flex:1.5;
 }
 
 .key.wrong{
 background:red;
-color:white;
 }
 
 /* WIN / LOSE */
@@ -192,11 +190,13 @@ pointer-events:none;
 <body>
 
 <div id="startScreen">
-<h1>ESTÁ PREPARADO PARA O DESAFIO?</h1>
+<h1>Está preparada para o desafio?</h1>
 <button class="startBtn" onclick="startGame()">START</button>
 </div>
 
-<h1>TERMO DA INGRID</h1>
+<h1>Meu Termo</h1>
+
+<div id="timer">02:00</div>
 
 <div id="board"></div>
 
@@ -260,11 +260,14 @@ pointer-events:none;
 
 <script>
 
-let palavra="CHUVA"
+let palavra="AMORZ"
 
 let tentativaAtual=0
 let tentativa=""
 let maxTentativas=6
+
+let tempo=120
+let timerInterval
 
 const board=document.getElementById("board")
 
@@ -276,6 +279,36 @@ board.appendChild(tile)
 
 function startGame(){
 document.getElementById("startScreen").style.display="none"
+startTimer()
+}
+
+function startTimer(){
+
+timerInterval=setInterval(function(){
+
+tempo--
+
+let minutos=Math.floor(tempo/60)
+let segundos=tempo%60
+
+if(segundos<10) segundos="0"+segundos
+
+document.getElementById("timer").innerText=minutos+":"+segundos
+
+if(tempo<=0){
+clearInterval(timerInterval)
+gameOverTime()
+}
+
+},1000)
+
+}
+
+function gameOverTime(){
+
+document.getElementById("correctWord").textContent=palavra
+document.getElementById("loseScreen").style.display="flex"
+
 }
 
 function press(letra){
@@ -331,6 +364,8 @@ document.getElementById("key"+tentativa[i]).classList.add("wrong")
 
 if(tentativa==palavra){
 
+clearInterval(timerInterval)
+
 document.getElementById("victoryScreen").style.display="flex"
 startConfetti()
 return
@@ -340,6 +375,8 @@ tentativaAtual++
 tentativa=""
 
 if(tentativaAtual==maxTentativas){
+
+clearInterval(timerInterval)
 
 for(let i=0;i<5;i++){
 let tile=board.children[(tentativaAtual-1)*5+i]
